@@ -71,13 +71,11 @@ void convert_to_grayscale(char *bmp_file_path) {
       }
 
       int gray_value = (int)(0.299 * red + 0.587 * green + 0.114 * blue);
-
-      // Seteaza aceeasi valoare de gri pentru toate cele trei culori
       red = gray_value;
       green = gray_value;
       blue = gray_value;
 
-      // Muta cursorul înapoi la poziția inițială și scrie noile valori
+      
       if (lseek(fd, -3, SEEK_CUR) < 0) {
 	perror("Error to move the file cursor4.\n");
 	exit(-1);
@@ -99,20 +97,6 @@ void convert_to_grayscale(char *bmp_file_path) {
       }
                     
     }
-
-    /*  for (int i = 0; i < height; i++) {
-        for (int j = 0; j < width; j++) {
-            unsigned char pixel[3];
-            fread(pixel, sizeof(unsigned char), 3, bmp_file);
-
-            unsigned char grayscale = 0.299 * pixel[0] + 0.587 * pixel[1] + 0.114 * pixel[2];
-
-            fseek(bmp_file, -3, SEEK_CUR);
-            for (int k = 0; k < 3; k++) {
-                fwrite(&grayscale, sizeof(unsigned char), 1, bmp_file);
-            }
-        }
-    }*/
 
     fclose(bmp_file);
 }
