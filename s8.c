@@ -19,12 +19,88 @@ void convert_to_grayscale(char *bmp_file_path) {
         exit(EXIT_FAILURE);
     }
 
+    int fd = open(bmp_file_path, O_RDWR, S_IRUSR | S_IWUSR | S_IROTH | S_IWOTH);
+
     fseek(bmp_file, 18, SEEK_SET);
-    int width, height;
+    int width, height, dataOffset;
     fread(&width, sizeof(int), 1, bmp_file);
     fread(&height, sizeof(int), 1, bmp_file);
 
-    for (int i = 0; i < height; i++) {
+    if (lseek(fd, 0, SEEK_SET) < 0){
+                        perror("Error to move the file cursor1\n");
+                        exit(-1);
+    }
+    if (lseek(fd, 10, SEEK_CUR) < 0){
+      perror("Error to move the file cursor1\n");
+      exit(-1);
+    }
+
+    if(read(fd,&dataOffset,4) < 0){
+      perror("Error to read from file!\n");
+      exit(-1);
+    }
+
+    if(lseek(fd,4,SEEK_SET) < 0){
+      perror("Error to move the file cursor2.\n");
+      exit(-1);
+    }
+                
+    if(lseek(fd,dataOffset,SEEK_SET) < 0){
+      perror("Error to move the file cursor3.\n");
+      exit(-1);
+    }
+
+    
+    int red,green,blue;
+    long long i;
+    for (i = 0; i < width * height; i++) {
+
+      if (read(fd, &red, 1) < 0){
+	perror("error red.\n");
+	exit(-1);
+      }
+
+      if (read(fd, &green, 1) < 0){
+	perror("error green.\n");
+	exit(-1);
+      }
+
+      if (read(fd, &blue, 1) < 0){
+	perror("error blue.\n");
+	exit(-1);
+      }
+
+      int gray_value = (int)(0.299 * red + 0.587 * green + 0.114 * blue);
+
+      // Seteaza aceeasi valoare de gri pentru toate cele trei culori
+      red = gray_value;
+      green = gray_value;
+      blue = gray_value;
+
+      // Muta cursorul înapoi la poziția inițială și scrie noile valori
+      if (lseek(fd, -3, SEEK_CUR) < 0) {
+	perror("Error to move the file cursor4.\n");
+	exit(-1);
+      }
+
+      if (write(fd, &red, 1) < 0) {
+	perror("Error to write red value.\n");
+	exit(-1);
+      }
+
+      if (write(fd, &green, 1) < 0) {
+	perror("Error to write green value.\n");
+	exit(-1);
+      }
+
+      if (write(fd, &blue, 1) < 0) {
+	perror("Error to write blue value.\n");
+	exit(-1);
+      }
+                    
+    }
+
+    /*  for (int i = 0; i < height; i++) {
         for (int j = 0; j < width; j++) {
             unsigned char pixel[3];
             fread(pixel, sizeof(unsigned char), 3, bmp_file);
@@ -36,7 +112,7 @@ void convert_to_grayscale(char *bmp_file_path) {
                 fwrite(&grayscale, sizeof(unsigned char), 1, bmp_file);
             }
         }
-    }
+    }*/
 
     fclose(bmp_file);
 }
