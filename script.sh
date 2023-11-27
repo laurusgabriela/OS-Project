@@ -1,18 +1,19 @@
 #!/bin/bash
 
 if [ "$#" -ne 1 ]; then
-    echo "Usage: bash script <c>"
+    echo "Usage: $0 <c>"
     exit 1
 fi
 
-char="$1"
+c="$1"
 count=0
-while IFS= read -r line || [ -n "$line" ];
-do
-    if [[ $line =~ '^[A-Z][a-zA-Z0-9 ,.!]*["$char"][A-Z]$' && ! $line =~ ',\ and\' ]];
-    then
-	((count++))
+contains=".*$c.*"
+
+while IFS= read -r line; do
+    if [[ "$line" =~ ^[A-Z][A-Za-z0-9\ ,.!?\ ]+[\ .!?\ ]+$ && ! "$line" =~ ,\ (si|Si) && "$line" =~ $contains ]]; then
+        ((count++))
     fi
 done
 
-echo "$count"
+echo $count
+
