@@ -16,4 +16,3 @@ while IFS= read -r line; do
 done
 
 echo $count
-

@@ -10,6 +10,7 @@
 #include <time.h>
 #include <fcntl.h>
 #include <sys/wait.h>
+#include <errno.h>
 
 void process_file_content(char *file_path, char *character) {
   int pipefd[2];
@@ -36,8 +37,11 @@ void process_file_content(char *file_path, char *character) {
     close(pipefd[1]);
 
     // Execute the script with the required argument
-    char *path="/home/laurus/script2.sh";
-    execlp("./", "./", path, character, (char*)NULL);
+    execlp("bash","bash","script.sh", character, (char*)NULL);
+    if(errno != 0)
+      {
+	fprintf(stderr, "fara eroare\n");
+      }
 
     // In case execlp fails
     perror("Error executing script");
